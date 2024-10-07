@@ -40,11 +40,77 @@ namespace GenericCrud.Repositories.Base
                 throw;
             }
         }
-        public async Task UpdateAsync(T entity) => _entities.Update(entity);
+        public async Task UpdateAsync(int id, T entity)
+        {
+            try
+            {
+                var originalEntity = await _entities.FindAsync(id);
+
+                if (originalEntity == null)
+                {
+                    Console.WriteLine("Entity not found.");
+                    return;
+                }
+
+                foreach (var property in _context.Entry(originalEntity).Properties)
+                {
+                    if (!property.Metadata.IsPrimaryKey())
+                    {
+                        var newValue = _context.Entry(entity).Property(property.Metadata.Name).CurrentValue;
+                        property.CurrentValue = newValue;
+                    }
+                }
+
+                int result = await _context.SaveChangesAsync();
+
+                if (result > 0)
+                {
+                    Console.WriteLine("Entity updated successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("Entity update failed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while updating the entity: {ex.Message}");
+                throw;
+            }
+        }
+
+
         public async Task DeleteAsync(int id)
         {
-            var entity = await GetByIdAsync(id);
-            if (entity != null) _entities.Remove(entity);
+            try
+            {
+                var entity = await GetByIdAsync(id);
+
+                if (entity == null)
+                {
+                    Console.WriteLine("Entity not found.");
+                    return;
+                }
+
+                _entities.Remove(entity);
+
+                int result = await _context.SaveChangesAsync();
+
+                if (result > 0)
+                {
+                    Console.WriteLine("Entity removed successfully.");
+                }
+                else
+                {
+                    Console.WriteLine("Entity removal failed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while removing the entity: {ex.Message}");
+                throw;
+            }
         }
+
     }
 }

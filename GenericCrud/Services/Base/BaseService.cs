@@ -26,8 +26,8 @@ namespace GenericCrud.Services.Base
         public async Task AddAsync(TDto dto) =>
             await _repository.AddAsync(_mapper.Map<TEntity>(dto));
 
-        public async Task UpdateAsync(TDto dto) =>
-            await _repository.UpdateAsync(_mapper.Map<TEntity>(dto));
+        public async Task UpdateAsync(int id, TDto dto) =>
+            await _repository.UpdateAsync(id, _mapper.Map<TEntity>(dto));
 
         public async Task DeleteAsync(int id) =>
             await _repository.DeleteAsync(id);

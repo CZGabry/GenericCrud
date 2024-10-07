@@ -5,23 +5,23 @@
 
     [ApiController]
     [Route("[controller]")]
-    public class BaseController<TDto> : ControllerBase where TDto : class
+    public class BaseController<BaseDto> : ControllerBase where BaseDto : class
     {
-        private readonly IService<TDto> _service;
+        private readonly IService<BaseDto> _service;
 
-        public BaseController(IService<TDto> service)
+        public BaseController(IService<BaseDto> service)
         {
             _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<BaseDto>>> GetAll()
         {
             return Ok(await _service.GetAllAsync());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TDto>> Get(int id)
+        public async Task<ActionResult<BaseDto>> Get(int id)
         {
             var dto = await _service.GetByIdAsync(id);
             if (dto == null) return NotFound();
@@ -29,16 +29,16 @@
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] TDto dto)
+        public async Task<IActionResult> Post([FromBody] BaseDto dto)
         {
             await _service.AddAsync(dto);
             return CreatedAtAction(nameof(Get), new { id = (dto as dynamic).Id }, dto);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] TDto dto)
+        public async Task<IActionResult> Put(int id, [FromBody] BaseDto dto)
         {
-            await _service.UpdateAsync(dto);
+            await _service.UpdateAsync(id, dto);
             return NoContent();
         }
 
