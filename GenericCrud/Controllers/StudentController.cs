@@ -1,13 +1,12 @@
 ﻿using GenericCrud.Controllers.Base;
 using GenericCrud.Dto;
-using GenericCrud.Services.Interfaces.Base;
-using Microsoft.AspNetCore.Mvc;
+using GenericCrud.Services.Interfaces;
 
 namespace GenericCrud.Controllers
 {
-    public class CourseController : BaseController<CourseDTO>
+    public class StudentsController : BaseController<StudentDTO>
     {
-        public CourseController(IService<CourseDTO> service) : base(service)
+        public StudentsController(IStudentService service) : base(service)
         {
         }
     }
