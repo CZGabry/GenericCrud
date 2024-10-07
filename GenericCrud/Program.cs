@@ -9,6 +9,7 @@ using GenericCrud.Repositories.Base;
 using GenericCrud.AutoMapper;
 using GenericCrud.Dto;
 using GenericCrud.Services.Interfaces.Base;
+using GenericCrud.Db.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<IService<StudentDTO>, StudentService>();
 
 builder.Services.AddScoped<IClassroomRepository, ClassroomRepository>();
 builder.Services.AddScoped<IService<ClassroomDTO>, ClassroomService>();
