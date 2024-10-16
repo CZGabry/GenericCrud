@@ -1,6 +1,8 @@
-﻿namespace GenericCrud.Dto.Base
+﻿using GenericCrud.Dto.Base.Interfaces;
+
+namespace GenericCrud.Dto.Base
 {
-    public class BaseDTO
+    public class BaseDTO: IBaseDTO
     {
         public int Id { get; set; }
     }
