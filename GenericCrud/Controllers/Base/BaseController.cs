@@ -1,7 +1,6 @@
 ﻿namespace GenericCrud.Controllers.Base
 {
     using GenericCrud.Dto.Base.Interfaces;
-    using GenericCrud.Filter;
     using GenericCrud.Filter.Interfaces;
     using GenericCrud.Filter.Sort;
     using GenericCrud.Services.Interfaces.Base;

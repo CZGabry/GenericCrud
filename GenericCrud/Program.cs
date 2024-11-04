@@ -7,14 +7,54 @@ using GenericCrud.Repositories.Interfaces.Base;
 using GenericCrud.Repositories.Base;
 using GenericCrud.AutoMapper;
 using GenericCrud.Services.Interfaces;
+using Newtonsoft.Json.Serialization;
+using GenericCrud.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var snakeCaseContractResolver = new DefaultContractResolver
+{ NamingStrategy = new SnakeCaseNamingStrategy() };
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
+
+builder.Services.AddControllers(opt =>
+{
+    // Set a custom metadata binding for DTO filter object properties.
+    opt.ModelMetadataDetailsProviders.Add(new SnakeCaseBindingMetadataProvider());
+
+    // Set a custom model binding for DTO filter object.
+    //opt.ModelBinderProviders.Insert(0, new FilterBinderProvider());
+    //opt.ModelBinderProviders.Insert(0, new DateOnlyModelBinderProvider());
+
+    //// Add a custom filter to manage some unhandled exceptions.
+    //opt.Filters.Add(typeof(CustomExceptionFilter));
+
+    // Disable the default value of  not treat null result values as 204 No Content.
+    var noContentFormatter =
+        opt.OutputFormatters.OfType<HttpNoContentOutputFormatter>().FirstOrDefault();
+    if (noContentFormatter != null) noContentFormatter.TreatNullValueAsNoContent = false;
+
+    // Set some profiles for HTTP caching configurations used in the controllers.
+    opt.CacheProfiles.Add("15Minutes", new CacheProfile { Duration = 900 });
+    opt.CacheProfiles.Add("2HoursProfile", new CacheProfile { Duration = 7200 });
+})
+    .AddNewtonsoftJson(options =>
     {
-        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+    options.SerializerSettings.ContractResolver = new DefaultContractResolver()
+    {
+        // Convert property names to snake_case when serializing JSON. Default was camelCase.
+        NamingStrategy = new SnakeCaseNamingStrategy()
+    };
+    options.SerializerSettings.ContractResolver = snakeCaseContractResolver;
+
+    // Serialize enum to their string value, instead of the numeric value.
+    //options.SerializerSettings.Converters.Add(new StringEnumConverter());
+
+    //options.SerializerSettings.Converters.Add(new NullableDateOnlyJsonConverter());
+    //options.SerializerSettings.Converters.Add(new DateOnlyJsonConverter());
+
+    //options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Local;
     });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
